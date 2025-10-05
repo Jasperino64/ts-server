@@ -1,20 +1,16 @@
-export function validateChirpHandler(req, res) {
-    let body = "";
-    req.on('data', chunk => {
-        body += chunk.toString();
-    });
-    res.header("Content-Type", "application/json");
-    req.on('end', () => {
-        try {
-            const data = JSON.parse(body);
-            const message = data.body;
-            if (message.length > 140) {
-                return res.status(400).json({ error: 'Chirp is too long' });
-            }
-            res.status(200).json({ valid: true });
-        }
-        catch (error) {
-            res.status(400).json({ error: 'Something went wrong' });
-        }
-    });
+import { respondWithJSON } from './json.js';
+import { BadRequestError } from './errors.js';
+const badWords = ["kerfuffle", "sharbert", "fornax"];
+export async function validateChirpHandler(req, res) {
+    const m = req.body;
+    const message = m.body;
+    if (message.length > 140) {
+        throw new BadRequestError("Chirp is too long. Max length is 140");
+    }
+    let cleanedMessage = message;
+    for (const badWord of badWords) {
+        const regex = new RegExp(`\\b${badWord}\\b`, 'gi');
+        cleanedMessage = cleanedMessage.replace(regex, '****');
+    }
+    respondWithJSON(res, 200, { cleanedBody: cleanedMessage });
 }
