@@ -1,4 +1,19 @@
-const config = {
-    fileseverHits: 0,
+process.loadEnvFile();
+function envOrThrow(varName) {
+    const value = process.env[varName];
+    if (!value) {
+        throw new Error(`Environment variable ${varName} is not set`);
+    }
+    return value;
+}
+export const config = {
+    api: {
+        fileServerHits: 0,
+    },
+    db: {
+        url: envOrThrow("DB_URL"),
+        migrationConfig: {
+            migrationsFolder: "./src/db/migrations",
+        },
+    },
 };
-export default config;
