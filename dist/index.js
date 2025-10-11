@@ -2,9 +2,11 @@ import express from "express";
 import { handlerReadiness } from "./api/readiness.js";
 import { logResponses } from "./api/middleware/logResponses.js";
 import countFileServerHits from "./api/middleware/fileserverHits.js";
-import { hits, resetHits } from "./api/hits.js";
+import { hits } from "./api/hits.js";
 import { validateChirpHandler } from "./api/validateChirp.js";
 import { errorMiddleWare } from "./api/middleware/errorMiddleware.js";
+import { handlerUsersCreate } from "./api/users.js";
+import { handlerReset } from "./api/reset.js";
 const app = express();
 const PORT = 8080;
 app.use(logResponses);
@@ -20,7 +22,10 @@ app.get("/admin/metrics", (req, res, next) => {
     Promise.resolve(hits(req, res)).catch(next);
 });
 app.post("/admin/reset", (req, res, next) => {
-    Promise.resolve(resetHits(req, res)).catch(next);
+    Promise.resolve(handlerReset(req, res)).catch(next);
+});
+app.post("/api/users", (req, res, next) => {
+    Promise.resolve(handlerUsersCreate(req, res)).catch(next);
 });
 // Error handling middleware needs to be defined last, after other app.use() and routes.
 app.use(errorMiddleWare);
