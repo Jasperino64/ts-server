@@ -8,6 +8,13 @@
       "when": 1760137194566,
       "tag": "0000_stormy_matthew_murdock",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760219367902,
+      "tag": "0001_sudden_smasher",
+      "breakpoints": true
     }
   ]
 }
