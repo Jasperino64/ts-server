@@ -3,7 +3,7 @@ import { handlerReadiness } from "./api/readiness.js";
 import { logResponses } from "./api/middleware/logResponses.js";
 import countFileServerHits from "./api/middleware/fileserverHits.js";
 import { hits } from "./api/hits.js";
-import { handlerChirpsCreate } from "./api/chirps.js";
+import { handlerChirpsCreate, handlerChirpsGetAll, handlerChirpGetById } from "./api/chirps.js";
 import { errorMiddleWare } from "./api/middleware/errorMiddleware.js";
 import { handlerUsersCreate } from "./api/users.js";
 import { handlerReset } from "./api/reset.js";
@@ -17,6 +17,12 @@ app.get("/api/healthz", (req, res, next) => {
 });
 app.post("/api/chirps", (req, res, next) => {
     Promise.resolve(handlerChirpsCreate(req, res)).catch(next);
+});
+app.get("/api/chirps", (req, res, next) => {
+    Promise.resolve(handlerChirpsGetAll(req, res)).catch(next);
+});
+app.get("/api/chirps/:chirpId", (req, res, next) => {
+    Promise.resolve(handlerChirpGetById(req, res)).catch(next);
 });
 app.get("/admin/metrics", (req, res, next) => {
     Promise.resolve(hits(req, res)).catch(next);
