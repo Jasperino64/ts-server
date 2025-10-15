@@ -38,9 +38,10 @@ export async function handlerChirpsGetAll(_: Request, res: Response) {
 
 export async function handlerChirpGetById(req: Request, res: Response) {
   const chirpId = req.params.chirpId;
-  const chirp = await getChirpById(chirpId);
-  if (!chirp) {
+  const chirps = await getChirpById(chirpId);
+  if (chirps.length === 0) {
     throw new BadRequestError("Chirp not found");
   }
+  const chirp = chirps[0];
   respondWithJSON(res, 200, chirp);
 }

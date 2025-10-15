@@ -15,6 +15,13 @@
       "when": 1760219367902,
       "tag": "0001_sudden_smasher",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760450062430,
+      "tag": "0002_curly_thor",
+      "breakpoints": true
     }
   ]
 }
