@@ -13,6 +13,6 @@ export async function reset() {
     await db.delete(users);
 }
 export async function getUserByEmail(email) {
-    const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    return user[0];
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
 }

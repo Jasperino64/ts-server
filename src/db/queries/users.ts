@@ -16,6 +16,6 @@ export async function reset() {
 }
 
 export async function getUserByEmail(email: string) {
-  const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
-  return user[0];
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  return user;
 }
