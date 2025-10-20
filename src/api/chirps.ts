@@ -1,39 +1,45 @@
 import {Request, Response } from 'express';
 import { respondWithJSON } from './json.js';
-import { BadRequestError } from './errors.js';
+import { BadRequestError, UserNotAuthenticatedError } from './errors.js';
 import { createChirp, getAllChirps, getChirpById } from '../db/queries/chirps.js';
+import { getBearerToken, validateJWT } from '../auth.js';
+import { config } from '../config.js';
+
 const badWords = ["kerfuffle", "sharbert", "fornax"];
 
 export async function handlerChirpsCreate(req: Request, res: Response) {
-    type parameters = {
-      body: string;
-      userId: string;
-    };
-    const params: parameters = req.body;  
-    if (!params.body || !params.userId) {
-      throw new BadRequestError("Missing required fields");
-    }
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.jwt.secret);
 
-    const message = params.body;
-    if (message.length > 140) {
-      throw new BadRequestError("Chirp is too long. Max length is 140");
-    }
-    let cleanedMessage = message;
-    for (const badWord of badWords) {
-      const regex = new RegExp(`\\b${badWord}\\b`, 'gi');
-      cleanedMessage = cleanedMessage.replace(regex, '****');
-    }
-    const chirp = await createChirp({ body: cleanedMessage, userId: params.userId });
-    if (!chirp) {
-      throw new Error("Could not create chirp");
-    }
-    
-    respondWithJSON(res, 201, chirp);
+  type parameters = {
+    body: string;
+  };
+  const params: parameters = req.body;  
+  
+  if (!params.body) {
+    throw new BadRequestError("Missing required fields");
+  }
+
+  const message = params.body;
+  if (message.length > 140) {
+    throw new BadRequestError("Chirp is too long. Max length is 140");
+  }
+  let cleanedMessage = message;
+  for (const badWord of badWords) {
+    const regex = new RegExp(`\\b${badWord}\\b`, 'gi');
+    cleanedMessage = cleanedMessage.replace(regex, '****');
+  }
+  const chirp = await createChirp({ body: cleanedMessage, userId: userId });
+  if (!chirp) {
+    throw new Error("Could not create chirp");
+  }
+  
+  respondWithJSON(res, 201, chirp);
 }
 
 export async function handlerChirpsGetAll(_: Request, res: Response) {
-    const chirps = await getAllChirps();
-    respondWithJSON(res, 200, chirps);
+  const chirps = await getAllChirps();
+  respondWithJSON(res, 200, chirps);
 }
 
 export async function handlerChirpGetById(req: Request, res: Response) {

@@ -1,10 +1,14 @@
 import { respondWithJSON } from './json.js';
 import { BadRequestError } from './errors.js';
 import { createChirp, getAllChirps, getChirpById } from '../db/queries/chirps.js';
+import { getBearerToken, validateJWT } from '../auth.js';
+import { config } from '../config.js';
 const badWords = ["kerfuffle", "sharbert", "fornax"];
 export async function handlerChirpsCreate(req, res) {
+    const token = getBearerToken(req);
+    const userId = validateJWT(token, config.jwt.secret);
     const params = req.body;
-    if (!params.body || !params.userId) {
+    if (!params.body) {
         throw new BadRequestError("Missing required fields");
     }
     const message = params.body;
@@ -16,7 +20,7 @@ export async function handlerChirpsCreate(req, res) {
         const regex = new RegExp(`\\b${badWord}\\b`, 'gi');
         cleanedMessage = cleanedMessage.replace(regex, '****');
     }
-    const chirp = await createChirp({ body: cleanedMessage, userId: params.userId });
+    const chirp = await createChirp({ body: cleanedMessage, userId: userId });
     if (!chirp) {
         throw new Error("Could not create chirp");
     }

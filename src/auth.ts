@@ -1,6 +1,8 @@
 import { hash, verify } from "argon2";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { UserNotAuthenticatedError } from "./api/errors";
+import { BadRequestError, UserNotAuthenticatedError } from "./api/errors.js";
+import e, { Request } from "express";
+import { register } from "module";
 const TOKEN_ISSUER = "chirpy"
 
 export async function hashPassword(password: string) : Promise<string> {
@@ -52,4 +54,21 @@ export function validateJWT(tokenString: string, secret: string) {
   }
 
   return decoded.sub;
+}
+
+export function getBearerToken(req: Request): string {
+  const authHeader = req.get("Authorization");
+  if (!authHeader) {
+    throw new BadRequestError("Missing or invalid Authorization header");
+  }
+  return extractBearerToken(authHeader);
+}
+
+export function extractBearerToken(authHeader: string): string {
+
+  const parts = authHeader.split(" ");
+  if (parts.length < 2 || parts[0] !== "Bearer") {
+    throw new BadRequestError("Missing or invalid Authorization header");
+  }
+  return parts[1];
 }

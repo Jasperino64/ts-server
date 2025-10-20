@@ -47,6 +47,7 @@ app.post("/api/users", (req, res, next) => {
 app.post("/api/login", (req, res, next) => {
   Promise.resolve(handlerLogin(req, res)).catch(next);
 });
+
 // Error handling middleware needs to be defined last, after other app.use() and routes.
 app.use(errorMiddleWare);
 

@@ -12,9 +12,16 @@ type APIConfig = {
     platform: string;
 }
 
+type JWTConfig = {
+    secret: string;
+    defaultExpiresInSeconds: number;
+    issuer: string;
+}
+
 type Config = {
     api: APIConfig;
     db: DBConfig;
+    jwt: JWTConfig;
 }
 
 function envOrThrow(varName: string): string {
@@ -28,12 +35,17 @@ function envOrThrow(varName: string): string {
 export const config: Config = {
     api: {
         fileServerHits: 0,
-        platform: envOrThrow("PLATFORM")
+        platform: envOrThrow("PLATFORM"),
     },
     db: {
         url: envOrThrow("DB_URL"),
         migrationConfig: {
             migrationsFolder: "./src/db/migrations",
         },
+    },
+    jwt: {
+        secret: envOrThrow("JWT_SECRET"),
+        defaultExpiresInSeconds: 3600,
+        issuer: "chirpy",
     },
 };

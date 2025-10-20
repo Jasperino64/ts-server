@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { respondWithError } from "../json.js";
 import { BadRequestError, NotFoundError, UserForbiddenError, UserNotAuthenticatedError } from "../errors.js";
+
 export function errorMiddleWare(
   err: Error,
   _: Request,
