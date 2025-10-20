@@ -13,7 +13,10 @@ export async function handlerLogin(req, res) {
     if (!matching) {
         throw new UserNotAuthenticatedError("invalid username or password");
     }
-    const expiresInSeconds = params.expiresInSeconds ?? config.jwt.defaultExpiresInSeconds;
+    let expiresInSeconds = config.jwt.defaultExpiresInSeconds;
+    if (params.expiresInSeconds && params.expiresInSeconds > expiresInSeconds) {
+        expiresInSeconds = params.expiresInSeconds;
+    }
     const token = makeJWT(user.id, expiresInSeconds, config.jwt.secret);
     console.log("Generated token:", token);
     respondWithJSON(res, 200, {
